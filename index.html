@@ -14,10 +14,10 @@
   <hr>
   <task-component
     v-for="(task,index) in taskList"
-      v-bind: taskname = "task.taskname"
-      v-bind: taskdate = "task.date"
-      v-bind: genre = "task.genre"
-      v-bind: index = "index"
+      v-bind:taskname = "task.taskname"
+      v-bind:taskdate = "task.date"
+      v-bind:genre = "task.genre"
+      v-bind:index = "index"
   ></task-component>
 </div>
 
@@ -27,20 +27,32 @@
   props: ["taskname", "date","genre","index"], 
     template: `
       <div class="taskarea"> 
-        ジャンル：{{ genre }}
-        <br>タスク：{{ taskname }}
-        <br>投稿日時：{{ date }}
-        <br><button>削除</button>
-        <button>完了</button>
-        <button>完了取消</button>
-      </div>`
+        <div :class="{ 'completed': isCompleted}">
+          ジャンル：{{ genre }}
+          <br>タスク：{{ taskname }}
+          <br>投稿日時：{{ date }}
+        </div>
+        <br><button v-on:click="deleteTask(Number(index))">削除</button>
+        <button v-on:click="isCompleted=true">完了</button>
+        <button v-on:click="isCompleted=false">完了取消</button>
+      </div>`,
+    data:function(){
+      return {
+        isCompleted:false
+      }
+    },
+    methods:{
+      deleteTask:function(index){
+        this.$root.taskList.splice(index,1);
+      }
+    }
   })
 
   new Vue({
     el: "#app",
     data: {
       // 配列genresに要素を定義してください
-      genres: ["事務作業","会議 ","商談"],
+      genres: ["事務作業","プログラミング","就活"],
       // taskメソッドを定義してください
       task: "",
       // selectedGenreメソッドを定義してください
@@ -81,4 +93,3 @@
     text-decoration: line-through;
   }
 </style>
-
