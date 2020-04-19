@@ -3,31 +3,82 @@
 <div id="app">
   <h1>ToDo リスト</h1>
   <label>ジャンル</label>
-  <!-- selictタグにv-modelを設定してください -->
-  <select v-model="selectedGenre">
-    <!-- optionタグにv-forと:valueを設定してください -->
+  <select v-model="selectedGenre">   
     <option v-for="genre in genres" :value="genre">{{ genre }}</option>
   </select>
   <br><br>
   <label>タスク</label>
-  <!-- textaraタグにv-modelを設定してください -->
   <textarea v-model="task"></textarea>
   <br><br>
-  <!-- buttonタグを記述してください -->
-  <button>追加</button>
+  <button @click="addTask" :class="{ inactive:isBlank }">追加</button>
   <hr>
+  <task-component
+    v-for="(task,index) in taskList"
+      v-bind: taskname = "task.taskname"
+      v-bind: taskdate = "task.date"
+      v-bind: genre = "task.genre"
+      v-bind: index = "index"
+  ></task-component>
 </div>
 
 <script>
+  Vue.component('task-component', {
+    // 以下に親コンポーネントから値を受け取るコードを記述してください
+  props: ["taskname", "date","genre","index"], 
+    template: `
+      <div class="taskarea"> 
+        ジャンル：{{ genre }}
+        <br>タスク：{{ taskname }}
+        <br>投稿日時：{{ date }}
+        <br><button>削除</button>
+        <button>完了</button>
+        <button>完了取消</button>
+      </div>`
+  })
+
   new Vue({
     el: "#app",
     data: {
       // 配列genresに要素を定義してください
-      	genres: ["事務作業","会議 ","商談"],
+      genres: ["事務作業","会議 ","商談"],
       // taskメソッドを定義してください
-      	task: "",
+      task: "",
       // selectedGenreメソッドを定義してください
-      	selectedGenre: ""
+      selectedGenre: "",
+      taskList:[]
+    },
+    computed:{
+      isBlank:function(){
+        return this.task ==="" || this.selectedGenre ===""
+      }
+    },
+    methods:{
+      addTask:function(){
+        const day = new Date();
+        this.taskList.push({
+          "taskname":this.task,
+          "genre" :this.selectedGenre,
+          "date" :day.toLocaleString('ja-JP')
+        });
+        this.task = "";
+      }
     }
   })
 </script>
+
+<style>
+  .inActive {
+    pointer-events: none;
+    color: gray;
+  }
+  .taskarea {
+    margin-left: 10px;
+    margin-bottom: 10px;
+    background-color:#fafad2;
+    padding: 10px 10px 10px 10px;
+  }
+  .completed{
+    text-decoration: line-through;
+  }
+</style>
+
